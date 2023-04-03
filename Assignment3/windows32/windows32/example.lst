@@ -1,0 +1,245 @@
+Microsoft (R) Macro Assembler Version 14.26.28806.0	    09/14/21 21:14:20
+example.asm						     Page 1 - 1
+
+
+				; I have abided by the UNCG Academic Integrity Policy
+				; Author: Jaylon Norris
+				; Date: 9/13/2021
+				; This program will prompt the user for four numbers, calculate average, and display the result 
+				; Then report how far away each input value is from the average 
+
+				INCLUDE io.h            ; header file for input/output
+			      C ; IO.H -- header file for I/O macros (listing suppressed)
+			      C .NOLIST      ; turn off listing
+			      C .LIST        ; begin listing
+			      C 
+				.586
+				.MODEL FLAT
+				.STACK 4096
+
+ 00000000			.DATA
+ 00000000 00000000		number1		DWORD	?
+ 00000004 00000000		number2		DWORD   ?
+ 00000008 00000000		number3     DWORD	?
+ 0000000C 00000000		number4     DWORD	?
+ 00000010 45 6E 74 65 72	prompt1		BYTE    "Enter first number", 0
+	   20 66 69 72 73
+	   74 20 6E 75 6D
+	   62 65 72 00
+ 00000023 45 6E 74 65 72	prompt2		BYTE    "Enter second number", 0
+	   20 73 65 63 6F
+	   6E 64 20 6E 75
+	   6D 62 65 72 00
+ 00000037 45 6E 74 65 72	prompt3		BYTE    "Enter third number", 0
+	   20 74 68 69 72
+	   64 20 6E 75 6D
+	   62 65 72 00
+ 0000004A 45 6E 74 65 72	prompt4		BYTE    "Enter fourth number", 0
+	   20 66 6F 75 72
+	   74 68 20 6E 75
+	   6D 62 65 72 00
+ 0000005E  00000028 [		string		BYTE    40 DUP (?)
+	    00
+	   ]
+ 00000086 41 56 45 52 41	resultLbl	BYTE	"AVERAGE", 0
+	   47 45 00
+ 0000008E 44 49 46 46 45	resultLbl2	BYTE	"DIFFERENCE", 0
+	   52 45 4E 43 45
+	   00
+
+
+
+
+
+
+				;Message window for Average
+ 00000099 54 68 65 20 41	message     BYTE    "The Averages of ", 0ah, 0dh
+	   76 65 72 61 67
+	   65 73 20 6F 66
+	   20 0A 0D
+ 000000AB			num1Val     BYTE    11 DUP (?)
+ 000000B6			num2Val     BYTE    11 DUP (?)
+ 000000C1			num3Val     BYTE    11 DUP (?)
+ 000000CC 0A 0D			num4Val     BYTE    11 DUP (?), 0ah, 0dh
+ 000000D9  69 73 0A 0D		            BYTE    "is", 0ah, 0dh
+ 000000DD 00			eaxVal      BYTE    11 DUP (?), 0
+
+
+				;Message2 window for Difference
+ 000000E9 41 76 65 72 61	message2     BYTE    "Average = "
+	   67 65 20 3D 20
+ 000000F3 0A 0D			average      BYTE    11 DUP (?), 0ah, 0dh
+ 00000100  44 69 73 74 61	             BYTE    "Distance from average ", 0dh,0dh
+	   6E 63 65 20 66
+	   72 6F 6D 20 61
+	   76 65 72 61 67
+	   65 20 0D 0D
+ 00000118  0000000B [		num1Value    BYTE    11 DUP (?) 
+	    00
+	   ]
+ 00000123  0000000B [		num1Diff     BYTE    11 DUP (?), 0ah, 0dh
+	    00
+	   ] 0A 0D
+ 00000130  0000000B [		num2Value    BYTE    11 DUP (?)
+	    00
+	   ]
+ 0000013B  0000000B [		num2Diff     BYTE    11 DUP (?), 0dh, 0ah
+	    00
+	   ] 0D 0A
+ 00000148  0000000B [		num3Value    BYTE    11 DUP (?)
+	    00
+	   ]
+ 00000153  0000000B [		num3Diff     BYTE    11 DUP (?), 0ah, 0dh
+	    00
+	   ] 0A 0D
+ 00000160  0000000B [		num4Value    BYTE    11 DUP (?)
+	    00
+	   ]
+ 0000016B  0000000B [		num4Diff     BYTE    11 DUP (?), 0ah, 0dh
+	    00
+	   ] 0A 0D
+
+
+ 00000000			.CODE
+ 00000000			_MainProc PROC
+
+				        input   prompt1, string, 40     ; repeat for second number
+				        atod    string
+ 0000002D  A3 00000000 R	        mov     number1, eax
+
+				        input   prompt2, string, 40     ; repeat for second number
+				        atod    string
+ 0000005F  A3 00000004 R	        mov     number2, eax
+
+				        
+				        input   prompt3, string, 40     ; repeat for second number
+				        atod    string
+ 00000091  A3 00000008 R	        mov     number3, eax
+
+				        
+				        input   prompt4, string, 40     ; repeat for second number
+				        atod    string
+ 000000C3  A3 0000000C R	        mov     number4, eax
+				        
+ 000000C8  A1 00000000 R	        mov     eax, number1			; first number to EAX
+ 000000CD  03 05 00000004 R	        add     eax, number2			; add second number
+ 000000D3  03 05 00000008 R	        add     eax, number3            ; add third number
+ 000000D9  03 05 0000000C R	        add     eax, number4            ; add fourth number
+				        
+ 000000DF  BA 00000000		        mov     edx, 0                  ;Divide for average
+ 000000E4  BB 00000004		        mov     ebx, 4
+ 000000E9  F7 FB		        idiv    ebx
+				    
+				        
+				        dtoa num1Val, number1            ;convert to ASCII characters
+				        dtoa num1Value,number1
+				        dtoa num2Val, number2
+				        dtoa num2Value,number2
+				        dtoa num3Val, number3
+				        dtoa num3Value,number3
+				        dtoa num4Val, number4 
+				        dtoa num4Value,number4
+				        dtoa eaxVal, eax
+				        dtoa average, eax
+				                                           
+				               
+				        output resultLbl, message         ;Show average
+
+ 00000214  29 05 00000000 R	        sub     number1, eax              ;Get differences
+ 0000021A  29 05 00000004 R	        sub     number2, eax
+ 00000220  29 05 00000008 R	        sub     number3, eax
+ 00000226  29 05 0000000C R	        sub     number4, eax
+				        dtoa    num1Diff, number1
+				        dtoa    num2Diff, number2
+				        dtoa    num3Diff, number3
+				        dtoa    num4Diff, number4
+				        output  resultLbl2, message2        ;Show difference
+ 000002B5  B8 00000000		        mov     eax, 0					  ; exit with return code 0
+ 000002BA  C3			        ret
+ 000002BB			_MainProc ENDP
+				END										; end of source code
+
+Microsoft (R) Macro Assembler Version 14.26.28806.0	    09/14/21 21:14:20
+example.asm						     Symbols 2 - 1
+
+
+
+
+Macros:
+
+                N a m e                 Type
+
+atod . . . . . . . . . . . . . .	Proc
+atow . . . . . . . . . . . . . .	Proc
+dtoa . . . . . . . . . . . . . .	Proc
+input  . . . . . . . . . . . . .	Proc
+output . . . . . . . . . . . . .	Proc
+wtoa . . . . . . . . . . . . . .	Proc
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+FLAT . . . . . . . . . . . . . .	GROUP
+STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
+_DATA  . . . . . . . . . . . . .	32 Bit	 00000178 Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 000002BB Para	  Public  'CODE'	
+
+
+Procedures, parameters, and locals:
+
+                N a m e                 Type     Value    Attr
+
+_MainProc  . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 000002BB Public
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+@CodeSize  . . . . . . . . . . .	Number	 00000000h   
+@DataSize  . . . . . . . . . . .	Number	 00000000h   
+@Interface . . . . . . . . . . .	Number	 00000000h   
+@Model . . . . . . . . . . . . .	Number	 00000007h   
+@code  . . . . . . . . . . . . .	Text   	 _TEXT
+@data  . . . . . . . . . . . . .	Text   	 FLAT
+@fardata?  . . . . . . . . . . .	Text   	 FLAT
+@fardata . . . . . . . . . . . .	Text   	 FLAT
+@stack . . . . . . . . . . . . .	Text   	 FLAT
+_getInput  . . . . . . . . . . .	L Near	 00000000 External
+_showOutput  . . . . . . . . . .	L Near	 00000000 External
+atodproc . . . . . . . . . . . .	L Near	 00000000 External
+atowproc . . . . . . . . . . . .	L Near	 00000000 External
+average  . . . . . . . . . . . .	Byte	 000000F3 _DATA	
+dtoaproc . . . . . . . . . . . .	L Near	 00000000 External
+eaxVal . . . . . . . . . . . . .	Byte	 000000DD _DATA	
+message2 . . . . . . . . . . . .	Byte	 000000E9 _DATA	
+message  . . . . . . . . . . . .	Byte	 00000099 _DATA	
+num1Diff . . . . . . . . . . . .	Byte	 00000123 _DATA	
+num1Value  . . . . . . . . . . .	Byte	 00000118 _DATA	
+num1Val  . . . . . . . . . . . .	Byte	 000000AB _DATA	
+num2Diff . . . . . . . . . . . .	Byte	 0000013B _DATA	
+num2Value  . . . . . . . . . . .	Byte	 00000130 _DATA	
+num2Val  . . . . . . . . . . . .	Byte	 000000B6 _DATA	
+num3Diff . . . . . . . . . . . .	Byte	 00000153 _DATA	
+num3Value  . . . . . . . . . . .	Byte	 00000148 _DATA	
+num3Val  . . . . . . . . . . . .	Byte	 000000C1 _DATA	
+num4Diff . . . . . . . . . . . .	Byte	 0000016B _DATA	
+num4Value  . . . . . . . . . . .	Byte	 00000160 _DATA	
+num4Val  . . . . . . . . . . . .	Byte	 000000CC _DATA	
+number1  . . . . . . . . . . . .	DWord	 00000000 _DATA	
+number2  . . . . . . . . . . . .	DWord	 00000004 _DATA	
+number3  . . . . . . . . . . . .	DWord	 00000008 _DATA	
+number4  . . . . . . . . . . . .	DWord	 0000000C _DATA	
+prompt1  . . . . . . . . . . . .	Byte	 00000010 _DATA	
+prompt2  . . . . . . . . . . . .	Byte	 00000023 _DATA	
+prompt3  . . . . . . . . . . . .	Byte	 00000037 _DATA	
+prompt4  . . . . . . . . . . . .	Byte	 0000004A _DATA	
+resultLbl2 . . . . . . . . . . .	Byte	 0000008E _DATA	
+resultLbl  . . . . . . . . . . .	Byte	 00000086 _DATA	
+string . . . . . . . . . . . . .	Byte	 0000005E _DATA	
+wtoaproc . . . . . . . . . . . .	L Near	 00000000 External
+
+	   0 Warnings
+	   0 Errors
